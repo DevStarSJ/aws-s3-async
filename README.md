@@ -39,11 +39,19 @@ const result = await listObjectsAsync(params);
 console.info(JSON.stringify(result, null, 2));
 ```
 
-- `listAllKeysAsync(Bucket: string, Prefix: string): Promise<any>` : additional convenience features
+- `listAllKeysAsync(params: ListObjectsRequest): Promise<string[]>` : additional convenience features
 
 ```TypeScript
-const result = await listAllKeysAsync("BUCKET_NAME", "PREFIX");
+const result = await listAllKeysAsync({Bucket: "BUCKET_NAME", Prefix: "PREFIX"});
 console.info(JSON.stringify(result, null, 2));
+```
+
+- `listObjectsAllRx(params: ListObjectsRequest): Rx.Observable<any>` : additional convenience features
+
+```TypeScript
+await listObjectsAllRx({Bucket: "BUCKET_NAME", Prefix: "PREFIX"})
+    .map(console.info)
+    .toPromise();
 ```
 
 

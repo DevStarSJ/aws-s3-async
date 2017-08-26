@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const AWS = require("aws-sdk");
+const Rx = require("rxjs");
 const fs_1 = require("fs");
 const awsS3 = new AWS.S3();
 function getObjectAsync(params, fileName) {
@@ -46,23 +47,39 @@ function listObjectsAsync(params) {
     });
 }
 exports.listObjectsAsync = listObjectsAsync;
-function listAllKeysAsync(Bucket, Prefix) {
+function listAllKeysAsync(params) {
     return __awaiter(this, void 0, void 0, function* () {
         let allKeys = [];
-        const paramsBucket = { Bucket: Bucket, Prefix: Prefix };
         let marker = undefined;
         let isRemainObjects = true;
         while (isRemainObjects) {
-            const params = Object.assign({}, paramsBucket);
+            const paramNext = Object.assign({}, params);
             if (marker)
-                params.Marker = marker;
-            const data = yield listObjectsAsync(params);
+                paramNext.Marker = marker;
+            const data = yield listObjectsAsync(paramNext);
             allKeys.push(...data.Contents.map(o => o.Key));
             if (!data.IsTruncated)
                 isRemainObjects = false;
-            marker = data.NextMarker;
+            marker = data.Contents[data.Contents.length - 1].Key;
         }
         return allKeys;
     });
 }
 exports.listAllKeysAsync = listAllKeysAsync;
+function listObjectsAllRx(params) {
+    return Rx.Observable.create((observer) => __awaiter(this, void 0, void 0, function* () {
+        let marker = undefined;
+        let isRemainObjects = true;
+        while (isRemainObjects) {
+            const paramNext = Object.assign({}, params);
+            if (marker)
+                paramNext.Marker = marker;
+            const data = yield listObjectsAsync(paramNext);
+            observer.next(data.Contents.map(a => a.Key));
+            if (!data.IsTruncated)
+                isRemainObjects = false;
+            marker = data.Contents[data.Contents.length - 1].Key;
+        }
+    }));
+}
+exports.listObjectsAllRx = listObjectsAllRx;
