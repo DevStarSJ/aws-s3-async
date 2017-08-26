@@ -47,9 +47,8 @@ function listObjectsAsync(params) {
     });
 }
 exports.listObjectsAsync = listObjectsAsync;
-function listAllKeysAsync(params) {
+function listAllKeys(params, nextFunction) {
     return __awaiter(this, void 0, void 0, function* () {
-        let allKeys = [];
         let marker = undefined;
         let isRemainObjects = true;
         while (isRemainObjects) {
@@ -57,29 +56,28 @@ function listAllKeysAsync(params) {
             if (marker)
                 paramNext.Marker = marker;
             const data = yield listObjectsAsync(paramNext);
-            allKeys.push(...data.Contents.map(o => o.Key));
+            nextFunction(data);
             if (!data.IsTruncated)
                 isRemainObjects = false;
             marker = data.Contents[data.Contents.length - 1].Key;
         }
+    });
+}
+function listAllKeysAsync(params) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let allKeys = [];
+        yield listAllKeys(params, data => {
+            allKeys.push(...data.Contents.map(o => o.Key));
+        });
         return allKeys;
     });
 }
 exports.listAllKeysAsync = listAllKeysAsync;
-function listObjectsAllRx(params) {
+function listAllKeysRx(params) {
     return Rx.Observable.create((observer) => __awaiter(this, void 0, void 0, function* () {
-        let marker = undefined;
-        let isRemainObjects = true;
-        while (isRemainObjects) {
-            const paramNext = Object.assign({}, params);
-            if (marker)
-                paramNext.Marker = marker;
-            const data = yield listObjectsAsync(paramNext);
+        yield listAllKeys(params, data => {
             observer.next(data.Contents.map(a => a.Key));
-            if (!data.IsTruncated)
-                isRemainObjects = false;
-            marker = data.Contents[data.Contents.length - 1].Key;
-        }
+        });
     }));
 }
-exports.listObjectsAllRx = listObjectsAllRx;
+exports.listAllKeysRx = listAllKeysRx;

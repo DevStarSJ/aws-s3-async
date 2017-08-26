@@ -45,9 +45,7 @@ export function listObjectsAsync(params: ListObjectsRequest): Promise<any> {
     });
 }
 
-
-export async function listAllKeysAsync(params: ListObjectsRequest): Promise<string[]> {
-    let allKeys: string[] = [];
+async function listAllKeys(params:ListObjectsRequest , nextFunction: (data: any) => void) {
     let marker: string = undefined;
     let isRemainObjects: boolean = true;
 
@@ -57,33 +55,31 @@ export async function listAllKeysAsync(params: ListObjectsRequest): Promise<stri
             paramNext.Marker = marker;
 
         const data: any = await listObjectsAsync(paramNext);
-        allKeys.push(...data.Contents.map(o => o.Key));
+        nextFunction(data);
 
         if(!data.IsTruncated)
             isRemainObjects = false;
         marker = data.Contents[data.Contents.length - 1].Key;
     }
+}
+
+
+export async function listAllKeysAsync(params: ListObjectsRequest): Promise<string[]> {
+    let allKeys: string[] = [];
+
+    await listAllKeys(params, data => {
+        allKeys.push(...data.Contents.map(o => o.Key));
+    });
 
     return allKeys;
 }
 
-export function listObjectsAllRx(params: ListObjectsRequest): Rx.Observable<any> {
+
+export function listAllKeysRx(params: ListObjectsRequest): Rx.Observable<any> {
     return Rx.Observable.create(async (observer) => {
-
-        let marker: string = undefined;
-        let isRemainObjects: boolean = true;
-
-        while (isRemainObjects) {
-            const paramNext: ListObjectsRequest = Object.assign({}, params);
-            if (marker)
-                paramNext.Marker = marker;
-
-            const data: any = await listObjectsAsync(paramNext);
+        await listAllKeys(params, data => {
             observer.next(data.Contents.map(a => a.Key));
-
-            if(!data.IsTruncated)
-                isRemainObjects = false;
-            marker = data.Contents[data.Contents.length - 1].Key;
-        }
+        });
     });
 }
+

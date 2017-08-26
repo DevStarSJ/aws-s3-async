@@ -46,10 +46,10 @@ const result = await listAllKeysAsync({Bucket: "BUCKET_NAME", Prefix: "PREFIX"})
 console.info(JSON.stringify(result, null, 2));
 ```
 
-- `listObjectsAllRx(params: ListObjectsRequest): Rx.Observable<any>` : additional convenience features
+- `listAllKeysRx(params: ListObjectsRequest): Rx.Observable<any>` : additional convenience features
 
 ```TypeScript
-await listObjectsAllRx({Bucket: "BUCKET_NAME", Prefix: "PREFIX"})
+await listAllKeysRx({Bucket: "BUCKET_NAME", Prefix: "PREFIX"})
     .map(console.info)
     .toPromise();
 ```
