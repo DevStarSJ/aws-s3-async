@@ -1,0 +1,31 @@
+{
+  "name": "aws-s3-async",
+  "version": "1.0.0",
+  "description": "AWS S3 helper package for async",
+  "main": "./dist/s3.js",
+  "types": "./src/s3.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DevStarSJ/aws-s3-async.git"
+  },
+  "keywords": [
+    "aws-sdk"
+  ],
+  "author": "Yun Seok-Joon <seokjoon.yun@gmail.com> (https://devstarsj.github.io)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DevStarSJ/aws-s3-async/issues"
+  },
+  "homepage": "https://github.com/DevStarSJ/aws-s3-async#readme",
+  "dependencies": {
+    "aws-sdk": "^2.102.0",
+    "rxjs": "^5.4.3"
+  },
+  "devDependencies": {
+    "@types/aws-sdk": "^2.7.0",
+    "@types/node": "^8.0.25"
+  }
+}
