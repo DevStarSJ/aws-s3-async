@@ -39,14 +39,14 @@ const result = await listObjectsAsync(params);
 console.info(JSON.stringify(result, null, 2));
 ```
 
-- `listAllKeysAsync(params: ListObjectsRequest): Promise<string[]>` : additional convenience features
+- `listAllKeysAsync(params: ListObjectsRequest): Promise<string[]>` : Promise style
 
 ```TypeScript
 const result = await listAllKeysAsync({Bucket: "BUCKET_NAME", Prefix: "PREFIX"});
 console.info(JSON.stringify(result, null, 2));
 ```
 
-- `listAllKeysRx(params: ListObjectsRequest): Rx.Observable<any>` : additional convenience features
+- `listAllKeysRx(params: ListObjectsRequest): Rx.Observable<any>` : ReactiveX style
 
 ```TypeScript
 await listAllKeysRx({Bucket: "BUCKET_NAME", Prefix: "PREFIX"})
@@ -54,6 +54,10 @@ await listAllKeysRx({Bucket: "BUCKET_NAME", Prefix: "PREFIX"})
     .toPromise();
 ```
 
+- `listAllKeys(params:ListObjectsRequest , nextFunction: (data: any) => void)` : Callback style
+```TypeScript
+await listAllKeys({Bucket: "BUCKET_NAME", Prefix: "PREFIX"}, console.info);
+```
 
 ## Author
 [Yun.Seok-Joon](http://DevStarSJ.github.io)

@@ -56,18 +56,19 @@ function listAllKeys(params, nextFunction) {
             if (marker)
                 paramNext.Marker = marker;
             const data = yield listObjectsAsync(paramNext);
-            nextFunction(data);
+            nextFunction(data.Contents.map(o => o.Key));
             if (!data.IsTruncated)
                 isRemainObjects = false;
             marker = data.Contents[data.Contents.length - 1].Key;
         }
     });
 }
+exports.listAllKeys = listAllKeys;
 function listAllKeysAsync(params) {
     return __awaiter(this, void 0, void 0, function* () {
         let allKeys = [];
         yield listAllKeys(params, data => {
-            allKeys.push(...data.Contents.map(o => o.Key));
+            allKeys.push(...data);
         });
         return allKeys;
     });
@@ -76,7 +77,7 @@ exports.listAllKeysAsync = listAllKeysAsync;
 function listAllKeysRx(params) {
     return Rx.Observable.create((observer) => __awaiter(this, void 0, void 0, function* () {
         yield listAllKeys(params, data => {
-            observer.next(data.Contents.map(a => a.Key));
+            observer.next(data);
         });
     }));
 }

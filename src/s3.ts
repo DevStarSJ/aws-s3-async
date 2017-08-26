@@ -45,7 +45,7 @@ export function listObjectsAsync(params: ListObjectsRequest): Promise<any> {
     });
 }
 
-async function listAllKeys(params:ListObjectsRequest , nextFunction: (data: any) => void) {
+export async function listAllKeys(params:ListObjectsRequest , nextFunction: (data: any) => void) {
     let marker: string = undefined;
     let isRemainObjects: boolean = true;
 
@@ -55,7 +55,7 @@ async function listAllKeys(params:ListObjectsRequest , nextFunction: (data: any)
             paramNext.Marker = marker;
 
         const data: any = await listObjectsAsync(paramNext);
-        nextFunction(data);
+        nextFunction(data.Contents.map(o => o.Key));
 
         if(!data.IsTruncated)
             isRemainObjects = false;
@@ -68,7 +68,7 @@ export async function listAllKeysAsync(params: ListObjectsRequest): Promise<stri
     let allKeys: string[] = [];
 
     await listAllKeys(params, data => {
-        allKeys.push(...data.Contents.map(o => o.Key));
+        allKeys.push(...data);
     });
 
     return allKeys;
@@ -78,8 +78,9 @@ export async function listAllKeysAsync(params: ListObjectsRequest): Promise<stri
 export function listAllKeysRx(params: ListObjectsRequest): Rx.Observable<any> {
     return Rx.Observable.create(async (observer) => {
         await listAllKeys(params, data => {
-            observer.next(data.Contents.map(a => a.Key));
+            observer.next(data);
         });
     });
 }
+
 
