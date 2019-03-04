@@ -26,7 +26,7 @@ export function putObjectAsync(params: PutObjectRequest, fileName: string): Prom
     putParam.Body = createReadStream(fileName);
 
     return new Promise((resolve, reject) => {
-        return awsS3.putObject(params, (error: any, data) =>  {
+        return awsS3.putObject(putParam, (error: any, data) =>  {
             if (error) {
                 reject(error);
             }
